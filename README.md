@@ -32,7 +32,7 @@ A simple, classic Snake game playable in your terminal!
 +------------------------------+
 Score: 2
 ```
-##Youtube Video Link
+## Youtube Video Link
 Check it out here! https://www.youtube.com/watch?v=p4LIyN080zE
 :)
 ## License
