@@ -14,7 +14,11 @@ class Snake:
     def set_direction(self, direction):
         self.direction = direction
     def head(self):
+        #pass for now
+        pass
         
+
+
 class Apple:
     pass
 
@@ -29,12 +33,13 @@ class Game:
     def board_matrix(self):
         #Matrix filled with "None"
         #Here it will return a 2d list of self.height and self.width with None elemnetns
-        return [[None for _ in range(self.width)] for _ in range(self.height)]
+        matrix = [[None for _ in range(self.width)] for _ in range(self.height)]
         #Draw the snake
         for pos in self.snake.body[1:]:
             x, y = pos
-            if 0 <= y self.height and 0 <= x < self.width:
+            if 0 <= y < self.height and 0 <= x < self.width:
                     matrix[y][x] = "0"
+        
     
     def render(self):
         matrix = self.board_matrix()
