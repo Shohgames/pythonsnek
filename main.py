@@ -1,9 +1,16 @@
 #main code for the snake game
 
-UP = (0,1)
-DOWN = (0, -1)
+UP = (0, -1)
+DOWN = (0, 1)
 LEFT = (-1, 0)
 RIGHT = (1, 0)
+
+DIRECTIONS = {
+    'w':UP,
+    's':DOWN,
+    'a':LEFT,
+    'd':RIGHT
+}
 
 class Snake:
     def __init__(self, initbody, initdirection):
@@ -14,7 +21,7 @@ class Snake:
     def set_direction(self, direction):
         self.direction = direction
     def head(self):
-        #pass for now
+        #pass for debug
         return self.body[0]
         
 
@@ -24,12 +31,14 @@ class Apple:
 
 
 class Game:
-    def __init__(self, height, width):
+    def __init__(self, height, width, wall_mode=True):
         self.height = height
         self.width = width
-        self.snake = Snake([(0,0),(1,0),(2,0),(3,0)], UP)
+        self.snake = Snake([(0,0),(1,0),(2,0),(3,0)], DOWN)
+        self.wall_mode = wall_mode
 
-    
+    def collision_self(self, position):
+        return position in self.snake.body
     def board_matrix(self):
         #Matrix filled with "None"
         #Here it will return a 2d list of self.height and self.width with None elemnetns
@@ -39,7 +48,11 @@ class Game:
             x, y = pos
             if 0 <= y < self.height and 0 <= x < self.width:
                     matrix[y][x] = "0"
-        
+        #snakehead draw func
+        head_x, head_y = self.snake.head()
+        if 0 <= head_y < self.height and 0 <= head_x < self.width:
+            matrix[head_y][head_x] = "X"
+        return matrix
     
     def render(self):
         matrix = self.board_matrix()
@@ -48,16 +61,76 @@ class Game:
         #print each row with the same logic
         for row in matrix:
             #make sure to add "space_key" otherwise the board will have no inner space
-            print("|" + " " * self.width + "|")
+            #make sure to print actual matix content and not space otherwise it will go over it
+            #print("|" + " " * self.width + "|") < not this!
+            print("|" + "".join(row) + "|")
         #print bottom border with the same logic
         print("+" + "-" * self.width + "+")
 
+    def move_snake(self):
+        head_x, head_y = self.snake.head()
+        dx, dy = self.snake.direction
+        new_x = head_x + dx
+        new_y = head_y + dy
 
+        if self.wall_mode:
+            if not (0 <= new_x < self.width and 0 <= new_y < self.height):
+                print("Crashed into the wall! Game over!")
+                exit()
+        else:
+            new_x = new_x % self.width
+            new_y = new_y % self.height
+        
+            new_position = (new_x, new_y)
+            if self.collision_self(new_position):
+                print("You crashed into yourself! Game over!")
+                exit()
+                    #'''old code'''            
+                    #wrap it ro the board
+        
+                    # new_x = max(0,min(self.width -1, new_x))
+                    # new_y = max(0, min(self.height -1, new_y))
+            self.snake.take_step((new_x, new_y))
         #height and width printer below for debug, no need to print it ingame
-        #print("Height:", self.height)
-        #print("Width:", self.width)
+    
+    def opposite_direction(self, dir1, dir2):
+        return (dir1[0] == -dir2[0] and dir1[1] == -dir2[1])    
+    
+class Debug:
+    def __init__(self, state, height=None, width=None):
+        self.state = state
+        self.height = height
+        self.width = width
+        if state == True:
+            print("Height:", self.height)
+            print("Width:", self.width)
+        elif state == False:
+            pass
 
-game = Game(10, 25)
-game.render()
+def main():
+    print("Choose your game mode!")
+    print("(1) Die on the wall")
+    print("(2) Warp on the wall")
+    choice = input("Enter 1 or 2:")
+    wall_mode = True if choice == "1" else False
+    game = Game(10, 25, wall_mode)
+    debug = Debug(False, game.height, game.width)
+    while True: 
+        game.render()
+        move = input("Move (WASD + ENTER, Enter to continue), and press Q to quit!: ").lower()
+        if move == 'q':
+            print("Thanks for playing!")
+            break
+        if move in DIRECTIONS:
+            new_dir = DIRECTIONS[move]
+            #stop reversing
+            if not game.opposite_direction(game.snake.direction, new_dir):
+                game.snake.set_direction(new_dir)
+        game.move_snake()
+
+if __name__ == "__main__":
+    main()
+
+
 
 
