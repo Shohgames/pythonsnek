@@ -1,4 +1,5 @@
 #main code for the snake game
+import random
 
 UP = (0, -1)
 DOWN = (0, 1)
@@ -27,7 +28,8 @@ class Snake:
 
 
 class Apple:
-    pass
+    def __init__(self, position):
+        self.position = position
 
 
 class Game:
@@ -36,6 +38,14 @@ class Game:
         self.width = width
         self.snake = Snake([(0,0),(1,0),(2,0),(3,0)], DOWN)
         self.wall_mode = wall_mode
+        self.score = 0
+        self.apple = self.spawn_apple()
+    
+    def spawn_apple(self):
+        while True:
+            pos = (random.randint(0, self.width-1),random.randint(0, self.height-1))
+            if pos not in self.snake.body:
+                return Apple(pos)
 
     def collision_self(self, position):
         return position in self.snake.body
@@ -52,6 +62,9 @@ class Game:
         head_x, head_y = self.snake.head()
         if 0 <= head_y < self.height and 0 <= head_x < self.width:
             matrix[head_y][head_x] = "X"
+        apple_x, apple_y = self.apple.position
+        if 0 <= apple_x < self.height and 0 <= apple_y < self.width:
+            matrix[apple_x][apple_y]="@"
         return matrix
     
     def render(self):
@@ -66,6 +79,8 @@ class Game:
             print("|" + "".join(row) + "|")
         #print bottom border with the same logic
         print("+" + "-" * self.width + "+")
+        print("score:",self.score)
+
 
     def move_snake(self):
         head_x, head_y = self.snake.head()
@@ -76,21 +91,30 @@ class Game:
         if self.wall_mode:
             if not (0 <= new_x < self.width and 0 <= new_y < self.height):
                 print("Crashed into the wall! Game over!")
+                print("Final score:", self.score)
                 exit()
         else:
             new_x = new_x % self.width
             new_y = new_y % self.height
         
-            new_position = (new_x, new_y)
-            if self.collision_self(new_position):
-                print("You crashed into yourself! Game over!")
-                exit()
-                    #'''old code'''            
+        new_position = (new_x, new_y)
+        if self.collision_self(new_position):
+            print("You crashed into yourself! Game over!")
+            print("Final score:", self.score)
+            exit()
+        
+        if new_position == self.apple.position:
+            self.score += 1
+            self.snake.body = [new_position] + self.snake.body 
+            self.apple = self.spawn_apple()
+        else:
+            self.snake.take_step(new_position)
+                #'''old code'''            
                     #wrap it ro the board
         
                     # new_x = max(0,min(self.width -1, new_x))
                     # new_y = max(0, min(self.height -1, new_y))
-            self.snake.take_step((new_x, new_y))
+        self.snake.take_step((new_x, new_y))
         #height and width printer below for debug, no need to print it ingame
     
     def opposite_direction(self, dir1, dir2):
