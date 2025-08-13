@@ -22,9 +22,11 @@ class Game:
         print("+" + "-" * self.width + "+")
         #print each row with the same logic
         for row in matrix:
-            print("|" + "" * self.width + "|")
+            #make sure to add "space_key" otherwise the board will have no inner space
+            print("|" + " " * self.width + "|")
         #print bottom border with the same logic
         print("+" + "-" * self.width + "+")
+
 
         #height and width printer below for debug, no need to print it ingame
         #print("Height:", self.height)
