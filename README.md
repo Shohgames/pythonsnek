@@ -32,6 +32,8 @@ A simple, classic Snake game playable in your terminal!
 +------------------------------+
 Score: 2
 ```
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/4c2233d4-3a4c-4011-8da9-768bd63ec602" />
+
 ## Youtube Video Link
 Check it out here! https://www.youtube.com/watch?v=p4LIyN080zE
 :)
